@@ -118,12 +118,6 @@ internal class CharacterRepositoryImpl(
 /**
  * Orchestrates the retrieval of a CharacterObject by attempting to fetch it locally first,
  * then remotely if it's not found in the local storage.
- *
- *
- * @return A CharacterObject instance representing the character details. If the character is not found
- * locally, it is fetched from the remote API, converted into a realm object, and saved locally before
- * being returned.
- *
  * @throws Exception when the character cannot be found both locally and remotely.
  *
  */
