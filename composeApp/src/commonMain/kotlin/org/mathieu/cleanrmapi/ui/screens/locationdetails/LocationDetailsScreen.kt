@@ -49,7 +49,7 @@ fun LocationDetailsScreen(
 
         LaunchedEffect(key1 = Unit) {
             viewModel.init(locationId = id)
-            soundManager.playSound("https://cdn.freesound.org/previews/797/797572_3680726-lq.ogg")
+            soundManager.playSound("https://static.wikia.nocookie.net/minecraft_gamepedia/images/d/d3/Cave1.ogg/revision/latest?cb=20190815201857")
         }
 
         Content(
