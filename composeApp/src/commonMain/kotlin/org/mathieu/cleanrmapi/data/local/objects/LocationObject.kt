@@ -32,6 +32,9 @@ class LocationObject (
     val charactersIds: String,
 )
 
+/**
+ * Converts a [LocationObject] to a [Location] model.
+ */
 internal suspend fun LocationObject.toModel(
     idsToCharactersConverter: suspend (charactersIds: String) -> List<Character> = { emptyList() }
 ) = Location(
@@ -42,6 +45,9 @@ internal suspend fun LocationObject.toModel(
     residents = idsToCharactersConverter(charactersIds)
 )
 
+/**
+ * Converts a [LocationResponse] to a [LocationObject].
+ */
 internal fun LocationResponse.toDBObject() = LocationObject(
     id = id,
     name = name,

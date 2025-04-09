@@ -1,7 +1,6 @@
 package org.mathieu.cleanrmapi.ui.screens.locationdetails
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -35,6 +34,12 @@ import org.mathieu.cleanrmapi.ui.core.theme.PrimaryColor
 import org.mathieu.cleanrmapi.ui.core.theme.SurfaceColor
 import org.mathieu.cleanrmapi.shared.*
 
+/**
+ * Composable function that displays the Location Details screen.
+ *
+ * @param navController The navigation controller.
+ * @param id The ID of the location.
+ */
 @Composable
 fun LocationDetailsScreen(
     navController: NavController,
@@ -62,6 +67,13 @@ fun LocationDetailsScreen(
 
 }
 
+/**
+ * Composable function that displays the content of the Location Details screen.
+ *
+ * @param state The state of the screen.
+ * @param onAction The action to perform when an event occurs.
+ * @param onClickBack The action to perform when the back button is clicked.
+ */
 @Composable
 private fun Content(
     state: LocationDetailsState = LocationDetailsState.Loading,
@@ -84,7 +96,7 @@ private fun Content(
     Crossfade(targetState = state) {
         when (it) {
             is LocationDetailsState.Error -> ErrorView(error = it.message)
-            is LocationDetailsState.Loaded -> CharacterDetailsContent(
+            is LocationDetailsState.Loaded -> LocationDetailsContent(
                 state = it,
                 onAction = onAction
             )
@@ -95,7 +107,11 @@ private fun Content(
     }
 }
 
-
+/**
+ * Composable function that displays an error message.
+ *
+ * @param error The error message to display.
+ */
 @Composable
 private fun ErrorView(error: String) {
     Text(
@@ -109,9 +125,20 @@ private fun ErrorView(error: String) {
     )
 }
 
+/**
+ * Object representing the content of the Location Details screen.
+ *
+ * @property invoke Composable function that displays the content of the screen.
+ * @property Header Composable function that displays the header of the screen.
+ */
+private object LocationDetailsContent {
 
-private object CharacterDetailsContent {
-
+    /**
+     * Composable function that displays the content of the screen.
+     *
+     * @param state The state of the screen.
+     * @param onAction The action to perform when an event occurs.
+     */
     @Composable
     operator fun invoke(
         state: LocationDetailsState.Loaded,
@@ -150,8 +177,11 @@ private object CharacterDetailsContent {
 
     }
 
-
-    @OptIn(ExperimentalFoundationApi::class)
+    /**
+     * Composable function that displays the header of the screen.
+     *
+     * @param state The state of the screen.
+     */
     @Composable
     private fun Header(state: LocationDetailsState.Loaded) {
 
@@ -179,9 +209,12 @@ private object CharacterDetailsContent {
 
 }
 
+/**
+ * Composable function that displays a preview of the Location Details screen.
+ */
 @Preview
 @Composable
-private fun CharacterDetailsPreview() = PreviewContent {
+private fun LocationDetailsPreview() = PreviewContent {
     Content()
 }
 
