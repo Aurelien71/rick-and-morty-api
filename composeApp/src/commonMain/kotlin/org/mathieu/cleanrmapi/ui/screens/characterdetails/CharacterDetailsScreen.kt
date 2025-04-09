@@ -151,7 +151,8 @@ private object CharacterDetailsContent {
 
             Header(
                 state = state,
-                offsetY = offsetY
+                offsetY = offsetY,
+                onAction = onAction
             )
 
             LazyColumn {
@@ -184,7 +185,8 @@ private object CharacterDetailsContent {
     @Composable
     private fun Header(
         state: CharacterDetailsState.Loaded,
-        offsetY: Float
+        offsetY: Float,
+        onAction: (CharacterDetailsAction) -> Unit = { }
     ) {
 
         val density = LocalDensity.current
@@ -220,7 +222,8 @@ private object CharacterDetailsContent {
                 AdditionalInfo(
                     gender = state.gender,
                     status = state.status,
-                    location = state.location
+                    location = state.location,
+                    onAction = onAction
                 )
 
             }
@@ -232,7 +235,8 @@ private object CharacterDetailsContent {
     private fun AdditionalInfo(
         gender: CharacterGender,
         status: CharacterStatus,
-        location: LocationPreview
+        location: LocationPreview,
+        onAction: (CharacterDetailsAction) -> Unit
     ) = Row(
         modifier = Modifier
             .padding(8.dp)
@@ -251,7 +255,11 @@ private object CharacterDetailsContent {
         Spacer(Modifier.width(16.dp))
 
         IconWithImage(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .clickable {
+                    onAction(CharacterDetailsAction.SelectedLocation(location))
+                },
             imageVector = Icons.Rounded.Home, text = location.name
         )
 

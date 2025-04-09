@@ -24,7 +24,7 @@ internal class LocationApi(private val client: HttpClient) {
         IdListValidator.assertValid(ids)
 
         return client
-            .get("locations/$ids")
+            .get("location/$ids")
             .accept(HttpStatusCode.OK)
             .body()
     }
@@ -36,9 +36,15 @@ internal class LocationApi(private val client: HttpClient) {
      *
      * @return The [LocationResponse] representing the details of the location.
      */
-    suspend fun getLocation(id: Int): LocationResponse? = client
-        .get("locations/$id")
-        .accept(HttpStatusCode.OK)
-        .body()
+    suspend fun getLocation(id: Int): LocationResponse? {
+        try {
+            return client
+                .get("location/$id")
+                .accept(HttpStatusCode.OK)
+                .body()
+        } catch (e: Exception) {
+            throw e;
+        }
+    }
 
 }
