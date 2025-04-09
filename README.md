@@ -4,7 +4,7 @@
 
 Le projet repose sur une clean architecture afin de faciliter l’évolution et la maintenance du code.
 
-### Structure des Dossiers
+## Structure des Dossiers
 
 - **/commonMain**  
   Contient le code source principal.  
@@ -23,3 +23,8 @@ Le projet repose sur une clean architecture afin de faciliter l’évolution et 
   Contient le code spécifique au Desktop.  
   - **/data** : Couche gérant les intéractions avec les données (local/API).
   - **/shared** : Contient les **Manager** permettant gestion du code spécifique au Desktop.
+
+## Conclusion
+
+Ce projet, structuré autour d’une clean architecture, offre une base pour intégrer de nouvelles fonctionnalités. La centralisation de la logique via les Manager et la séparation des responsabilités garantissent un développement respectant les normes de Kotlin Multi-Platform.
+
