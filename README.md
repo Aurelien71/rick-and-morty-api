@@ -1,21 +1,30 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop.
+# Rick and Morty API
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+## Architecture du Projet
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+Le projet repose sur une clean architecture afin de faciliter l’évolution et la maintenance du code.
 
+## Structure des Dossiers
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+- **/commonMain**  
+  Contient le code source principal.  
+  - **/data** : Couche gérant les intéractions avec les données (local/API).
+  - **/domain** : Couche contenant les objets métiers avec les interfaces associés.
+  - **/shared** : Contient les **Manager** permettant gestion de platforme (OS).
+  - **/ui** : Couche contenant toutes les interfaces utilisateurs.
+ 
+- **/androidMain**  
+  Contient le code spécifique à android.  
+  - **/data** : Couche gérant les intéractions avec les données (local/API).
+  - **/shared** : Contient les **Manager** permettant gestion du code spécifique à Android.
+  - **/ui** :  Couche contenant toutes les interfaces utilisateurs (Android).
+ 
+- **/desktopMain**  
+  Contient le code spécifique au Desktop.  
+  - **/data** : Couche gérant les intéractions avec les données (local/API).
+  - **/shared** : Contient les **Manager** permettant gestion du code spécifique au Desktop.
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
+## Conclusion
 
-You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+Ce projet, structuré autour d’une clean architecture, offre une base pour intégrer de nouvelles fonctionnalités. La centralisation de la logique via les Manager et la séparation des responsabilités garantissent un développement respectant les normes de Kotlin Multi-Platform.
+
