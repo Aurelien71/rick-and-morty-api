@@ -20,6 +20,6 @@ Le projet repose sur une clean architecture afin de faciliter l’évolution et 
   - **/ui** :  Couche contenant toutes les interfaces utilisateurs (Android).
  
 - **/desktopMain**  
-  Contient le code source principal.  
+  Contient le code spécifique au Desktop.  
   - **/data** : Couche gérant les intéractions avec les données (local/API).
   - **/shared** : Contient les **Manager** permettant gestion du code spécifique au Desktop.
