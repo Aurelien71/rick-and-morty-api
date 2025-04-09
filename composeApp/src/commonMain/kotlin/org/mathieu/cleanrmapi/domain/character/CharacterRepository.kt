@@ -1,6 +1,7 @@
 package org.mathieu.cleanrmapi.domain.character
 
 import kotlinx.coroutines.flow.Flow
+import org.mathieu.cleanrmapi.data.validators.annotations.MustBeCommaSeparatedIds
 import org.mathieu.cleanrmapi.domain.character.models.Character
 import org.mathieu.cleanrmapi.domain.character.models.CharacterDetails
 import org.mathieu.cleanrmapi.domain.episode.models.Episode
@@ -35,5 +36,14 @@ interface CharacterRepository {
      * @return Episodes where acts the specified character.
      */
     suspend fun getEpisodesWhere(characterId: Int): List<Episode>
+
+    /**
+     * Retrieves a list of characters based on a comma-separated list of character IDs.
+     *
+     * @param idList A comma-separated string of character IDs.
+     *
+     * @return A list of [Character] objects corresponding to the provided IDs.
+     */
+    suspend fun getCharacterFromIdList(@MustBeCommaSeparatedIds idList: String): List<Character>
 
 }

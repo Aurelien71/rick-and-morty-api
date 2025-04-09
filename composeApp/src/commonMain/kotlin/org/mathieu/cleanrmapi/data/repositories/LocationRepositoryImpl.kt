@@ -2,14 +2,13 @@ package org.mathieu.cleanrmapi.data.repositories
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.mathieu.cleanrmapi.common.toList
 import org.mathieu.cleanrmapi.data.local.LocationDAO
 import org.mathieu.cleanrmapi.data.local.objects.LocationObject
 import org.mathieu.cleanrmapi.data.local.objects.toDBObject
 import org.mathieu.cleanrmapi.data.local.objects.toModel
-import org.mathieu.cleanrmapi.data.remote.CharacterApi
 import org.mathieu.cleanrmapi.data.remote.LocationApi
 import org.mathieu.cleanrmapi.data.validators.annotations.MustBeCommaSeparatedIds
+import org.mathieu.cleanrmapi.domain.character.CharacterRepository
 import org.mathieu.cleanrmapi.domain.character.models.Character
 import org.mathieu.cleanrmapi.domain.location.LocationRepository
 import org.mathieu.cleanrmapi.domain.location.models.Location
@@ -18,12 +17,12 @@ import org.mathieu.cleanrmapi.domain.location.models.Location
  * Implementation of the [LocationRepository] interface that retrieves location data from the local database
  * and the remote API.
  *
- * @param characterApi The API used to retrieve character data.
+ * @param characterRepository The repository for retrieving character data.
  *
  * @return A [LocationRepository] object that can be used to retrieve location data.
  */
 internal class LocationRepositoryImpl(
-    private val characterApi: CharacterApi
+    private val characterRepository: CharacterRepository
 ) : LocationRepository {
 
     override suspend fun getLocation(locationId: Int): Location {
@@ -37,18 +36,14 @@ internal class LocationRepositoryImpl(
 
     /**
      * Retrieves a list of characters associated with a given location.
+     *
      * @param idList The unique identifier of the character.
+     *
      * @return A list of [Character] objects representing the characters associated
      */
-    private suspend fun getCharactersFromIdList(@MustBeCommaSeparatedIds idList: String): List<Character> {
-        return if (idList.contains(",")) {
-            val characterResponse = characterApi.getCharactersFromIds(idList)
-            characterResponse.map { it.toDBObject().toModel() }
-        } else {
-            val characterResponse = characterApi.getCharacter(idList.toInt())
-            characterResponse?.toDBObject()?.toModel()?.toList() ?: emptyList()
-        }
-    }
+    private suspend fun getCharactersFromIdList(@MustBeCommaSeparatedIds idList: String): List<Character> =
+        characterRepository.getCharacterFromIdList(idList)
+
 }
 
 /**

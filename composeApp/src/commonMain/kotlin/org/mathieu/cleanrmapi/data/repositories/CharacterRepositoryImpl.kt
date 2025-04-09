@@ -20,6 +20,9 @@ import org.mathieu.cleanrmapi.domain.character.CharacterRepository
 import org.mathieu.cleanrmapi.domain.character.models.Character
 import org.mathieu.cleanrmapi.domain.character.models.CharacterDetails
 import org.mathieu.cleanrmapi.domain.episode.models.Episode
+import kotlin.text.map
+import kotlin.text.split
+import kotlin.text.trim
 
 
 private const val CHARACTER_PREFS = "character_repository_preferences"
@@ -73,20 +76,6 @@ internal class CharacterRepositoryImpl(
 
     override suspend fun loadMore() = fetchNext()
 
-
-    /**
-     * Retrieves the character with the specified ID.
-     *
-     * The function follows these steps:
-     * 1. Tries to fetch the character from the local storage.
-     * 2. If not found locally, it fetches the character from the API.
-     * 3. Upon successful API retrieval, it saves the character to local storage.
-     * 4. If the character is still not found, it throws an exception.
-     *
-     * @param id The unique identifier of the character to retrieve.
-     * @return The [Character] object representing the character details.
-     * @throws Exception If the character cannot be found both locally and via the API.
-     */
     override suspend fun getCharacterDetailed(id: Int): CharacterDetails {
 
         val characterLocal = GetCharacterObjectIfExists(characterId = id)
@@ -95,6 +84,13 @@ internal class CharacterRepositoryImpl(
             idsToEpisodesConverter = ::getEpisodesFromIdList
         )
 
+    }
+
+    override suspend fun getCharacterFromIdList(@MustBeCommaSeparatedIds idList: String): List<Character> {
+
+        val charactersLocal = GetCharacterObjectsIfExists(idList)
+
+        return charactersLocal.map { it.toModel() }
     }
 
     override suspend fun getEpisodesWhere(characterId: Int): List<Episode> {
@@ -123,13 +119,6 @@ internal class CharacterRepositoryImpl(
  * Orchestrates the retrieval of a CharacterObject by attempting to fetch it locally first,
  * then remotely if it's not found in the local storage.
  *
- *  Note: By abstracting away part of the `getCharacter` repository implementation logic into a sequential,
- *  clearly-defined process, this approach aims to improve code readability and maintainability.
- *  It leverages the principle of separation of concerns, ensuring efficient data retrieval by minimizing
- *  network requests and providing a robust mechanism for error handling when character data cannot be found.
- *
- * @param characterId The unique identifier for the character to be retrieved. This ID is used first
- * to attempt to fetch the character from local storage and then from a remote source if necessary.
  *
  * @return A CharacterObject instance representing the character details. If the character is not found
  * locally, it is fetched from the remote API, converted into a realm object, and saved locally before
@@ -165,6 +154,73 @@ private object GetCharacterObjectIfExists : KoinComponent {
     private fun CharacterObject?.throwIfWeCannotFindIt(): CharacterObject {
         if (this != null) return this
         throw Exception("Could not find Character locally and remotely.")
+    }
+
+}
+
+/**
+ * Retrieves a list of CharacterObjects from the local database if they exist,
+ * otherwise fetches them from the remote API and saves them to the local database.
+ */
+private object GetCharacterObjectsIfExists : KoinComponent {
+
+    private val characterApi: CharacterApi by inject()
+    private val characterLocal: CharacterDAO by inject()
+
+
+    /**
+     * Retrieves a list of CharacterObjects from the local database if they exist,
+     * otherwise fetches them from the remote API and saves them to the local database.
+     *
+     * @param idList A comma-separated string of character IDs.
+     *
+     * @return A list of CharacterObjects corresponding to the provided IDs.
+     */
+    suspend operator fun invoke(@MustBeCommaSeparatedIds idList: String): List<CharacterObject> =
+        tryToGetCharactersLocally(idList.split(",").map { it.trim() })
+            .fetchRemotelyIfNotFound(idList)
+            .throwIfWeCannotFindIt()
+
+    /**
+     * Retrieves a list of CharacterObjects from the local database if they exist,
+     * otherwise returns null.
+     *
+     * @param ids A list of character IDs.
+     *
+     * @return A list of CharacterObjects corresponding to the provided IDs, or null if they do not exist.
+     */
+    private suspend fun tryToGetCharactersLocally(ids: List<String>): List<CharacterObject> = characterLocal.getCharactersByIds(ids)
+
+    /**
+     * Fetches a list of CharacterObjects from the remote API if they do not exist in the local database,
+     * otherwise returns the existing CharacterObjects.
+     *
+     * @param idList A comma-separated string of character IDs.
+     *
+     * @return A list of CharacterObjects corresponding to the provided IDs.
+     */
+    private suspend fun List<CharacterObject>?.fetchRemotelyIfNotFound(idList: String): List<CharacterObject> {
+        if (this != null) return this
+
+        return if (idList.contains(",")) {
+             characterApi
+                .getCharactersFromIds(idList)
+                .map { it.toDBObject() }
+                .also { characterLocal.saveCharacters(it) }
+        } else {
+             characterApi.getCharacter(idList.toInt())
+                ?.toDBObject()?.toList() ?: emptyList()
+        }
+    }
+
+    /**
+     * Throws an exception if a list of CharacterObjects cannot be found in the local database and the remote API.
+     *
+     * @return A list of CharacterObjects corresponding to the provided IDs.
+     */
+    private fun List<CharacterObject>?.throwIfWeCannotFindIt(): List<CharacterObject> {
+        if (this != null) return this
+        throw Exception("Could not find Characters locally and remotely.")
     }
 
 }
