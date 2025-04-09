@@ -5,15 +5,19 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.mathieu.cleanrmapi.data.local.CharacterDAO
 import org.mathieu.cleanrmapi.data.local.EpisodeDAO
+import org.mathieu.cleanrmapi.data.local.LocationDAO
 import org.mathieu.cleanrmapi.data.local.RMDatabase
 import org.mathieu.cleanrmapi.data.local.getRoomDatabase
 import org.mathieu.cleanrmapi.data.remote.CharacterApi
 import org.mathieu.cleanrmapi.data.remote.EpisodeApi
+import org.mathieu.cleanrmapi.data.remote.LocationApi
 import org.mathieu.cleanrmapi.data.remote.createHttpClient
 import org.mathieu.cleanrmapi.data.repositories.CharacterRepositoryImpl
 import org.mathieu.cleanrmapi.data.repositories.EpisodeRepositoryImpl
+import org.mathieu.cleanrmapi.data.repositories.LocationRepositoryImpl
 import org.mathieu.cleanrmapi.domain.character.CharacterRepository
 import org.mathieu.cleanrmapi.domain.episode.EpisodeRepository
+import org.mathieu.cleanrmapi.domain.location.LocationRepository
 
 private const val RM_API_URL = "https://rickandmortyapi.com/api/"
 
@@ -30,6 +34,7 @@ val remoteModule = module {
     }
     single { CharacterApi(get()) }
     single { EpisodeApi(get()) }
+    single { LocationApi(get()) }
 }
 
 val repositoriesModule = module {
@@ -38,6 +43,7 @@ val repositoriesModule = module {
 
     single<EpisodeRepository> { EpisodeRepositoryImpl(get()) }
 
+    single<LocationRepository> { LocationRepositoryImpl(get()) }
 }
 
 val databaseModule = module {
@@ -56,4 +62,8 @@ val databaseModule = module {
         db.episodeDAO()
     }
 
+    single<LocationDAO> {
+        val db: RMDatabase = get()
+        db.locationDAO()
+    }
 }
